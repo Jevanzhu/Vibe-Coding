@@ -1,0 +1,74 @@
+services:
+  devbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vibe-coding-devbox:latest
+    container_name: vibe-coding-devbox
+
+    # 容器重启策略（服务器必需）
+    restart: unless-stopped
+
+    # 特权模式（用于 DinD - Docker in Docker）
+    privileged: true
+
+    # 挂载卷
+    volumes:
+      # 项目代码目录
+      - ./projects:/workspace/projects
+      # 持久化 home 目录
+      - home-data:/home/Dev
+      # Docker socket（容器内使用 Docker）
+      - /var/run/docker.sock:/var/run/docker.sock
+      # 时区同步
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+    # 环境变量
+    environment:
+      # API Keys
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      # 配置
+      - PYTHONPATH=/workspace/projects
+      - NODE_ENV=development
+      - TZ=Asia/Shanghai
+
+    # 端口映射
+    ports:
+      # SSH 访问（主要入口）
+      - "2222:22"
+      # 应用端口范围
+      - "3000:3000"
+      - "5000-5010:5000-5010"
+      - "8000-8010:8000-8010"
+      - "8080:8080"
+
+    # 资源限制（生产环境推荐）
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '1'
+          memory: 2G
+
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+# 命名卷
+volumes:
+  home-data:
+    driver: local
+
+# 网络（可选：使用已有网络）
+networks:
+  default:
+    driver: bridge
