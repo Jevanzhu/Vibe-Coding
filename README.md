@@ -19,16 +19,14 @@
 ### 方式 1: 使用预构建镜像（推荐）
 
 ```bash
-# 登录 GitHub Container Registry
-echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-
 # 拉取镜像
 docker pull ghcr.io/YOUR_USERNAME/vibe-coding:latest
 
 # 运行
 docker run -d \
   -p 2222:22 \
-  -e ANTHROPIC_API_KEY=your_key \
+  -v ./projects:/workspace/projects \
+  --name vibe-coding \
   ghcr.io/YOUR_USERNAME/vibe-coding:latest
 ```
 
@@ -39,13 +37,8 @@ docker run -d \
 git clone https://github.com/YOUR_USERNAME/vibe-coding.git
 cd vibe-coding
 
-# 配置环境变量
-cp .env.example .env
-vim .env  # 添加 API Keys
-
-# 部署
-chmod +x deploy.sh
-./deploy.sh
+# 构建并启动
+docker compose up -d --build
 ```
 
 ## 访问方式
@@ -81,6 +74,23 @@ claude    # 启动 Claude Code
 opencode  # 启动 OpenCode
 ```
 
+## 配置 API Keys
+
+进入容器后手动设置（推荐，更安全）：
+
+```bash
+# 连接容器
+ssh -p 2222 Dev@你的服务器IP
+
+# 设置 API Key（临时，当前会话有效）
+export ANTHROPIC_API_KEY=sk-xxx
+claude
+
+# 或持久化到 ~/.bashrc
+echo 'export ANTHROPIC_API_KEY=sk-xxx' >> ~/.bashrc
+source ~/.bashrc
+```
+
 ## 常用命令
 
 ```bash
@@ -93,6 +103,9 @@ docker compose down
 # 完全重建
 docker compose down -v
 docker compose up -d --build
+
+# 重启容器
+docker compose restart
 ```
 
 ## 自动化构建
@@ -132,12 +145,17 @@ docker compose up -d --build
 ```
 .
 ├── .github/workflows/      # GitHub Actions 配置
-├── Dockerfile              # 镜像定义
+├── Dockerfile              # 镜像定义（构建用国外源，运行切换国内源）
 ├── docker-compose.yml      # 服务编排
-├── deploy.sh               # 一键部署脚本
-├── .env.example            # 环境变量模板
 └── projects/               # 项目代码目录
 ```
+
+## 镜像源策略
+
+| 阶段 | APT 源 | PyPI 源 | 说明 |
+|------|--------|---------|------|
+| **构建时** | Debian 官方 | 官方 | 构建稳定，软件包最新 |
+| **运行时** | 腾讯云 | 腾讯云 | 国内访问快，安装依赖快 |
 
 ## 参考
 

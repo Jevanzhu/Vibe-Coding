@@ -1,18 +1,21 @@
+# GitHub Actions - 自动构建 Docker 镜像
+# 推送到 GitHub Container Registry (ghcr.io)
+
 name: Build and Push Docker Image
 
 on:
   # 手动触发
   workflow_dispatch:
-  
-  # 推送 tag 时自动触发
+
+  # 推送 tag 时自动触发 (v1.0.0, v1.0, v1)
   push:
     tags:
       - 'v*'
     branches:
       - main
       - master
-  
-  # PR 时构建测试（不推送）
+
+  # PR 时构建测试（不推送镜像）
   pull_request:
     branches:
       - main
@@ -30,15 +33,19 @@ jobs:
       packages: write
 
     steps:
+      # 检出代码
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 设置 QEMU（用于多架构构建）
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
+      # 设置 Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 登录容器仓库（PR时不登录）
       - name: Log in to Container Registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
@@ -47,6 +54,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # 提取镜像元数据（标签、版本等）
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -61,6 +69,7 @@ jobs:
             type=sha,prefix=,suffix=,format=short
             latest
 
+      # 构建并推送镜像
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
