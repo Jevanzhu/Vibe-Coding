@@ -1,3 +1,6 @@
+# Vibe Coding DevBox - Docker Compose 配置
+# 用于快速启动开发环境容器
+
 services:
   devbox:
     build:
@@ -9,44 +12,38 @@ services:
     # 容器重启策略（服务器必需）
     restart: unless-stopped
 
-    # 特权模式（用于 DinD - Docker in Docker）
+    # 特权模式（容器内可使用 Docker）
     privileged: true
 
-    # 挂载卷
+    # 数据持久化挂载
     volumes:
       # 项目代码目录
       - ./projects:/workspace/projects
-      # 持久化 home 目录
+      # Dev用户home目录持久化
       - home-data:/home/Dev
-      # Docker socket（容器内使用 Docker）
+      # Docker socket（容器内使用宿主机Docker）
       - /var/run/docker.sock:/var/run/docker.sock
       # 时区同步
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
 
-    # 环境变量
+    # 环境变量（API Keys请进入容器后手动设置）
     environment:
-      # API Keys
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
-      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-      # 配置
       - PYTHONPATH=/workspace/projects
       - NODE_ENV=development
       - TZ=Asia/Shanghai
 
     # 端口映射
     ports:
-      # SSH 访问（主要入口）
+      # SSH访问（主要入口）
       - "2222:22"
-      # 应用端口范围
+      # 应用开发端口
       - "3000:3000"
       - "5000-5010:5000-5010"
       - "8000-8010:8000-8010"
       - "8080:8080"
 
-    # 资源限制（生产环境推荐）
+    # 资源限制（生产环境建议开启）
     deploy:
       resources:
         limits:
@@ -58,17 +55,17 @@ services:
 
     # 日志配置
     logging:
-      driver: "json-file"
+      driver: json-file
       options:
-        max-size: "100m"
+        max-size: 100m
         max-file: "3"
 
-# 命名卷
+# 命名卷定义
 volumes:
   home-data:
     driver: local
 
-# 网络（可选：使用已有网络）
+# 网络配置
 networks:
   default:
     driver: bridge
