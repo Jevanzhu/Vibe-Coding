@@ -7,6 +7,10 @@ on:
   # 手动触发
   workflow_dispatch:
 
+  # 每周五晚上11点 (UTC 15:00) 自动构建
+  schedule:
+    - cron: '0 15 * * 5'
+
   # 推送 tag 时自动触发 (v1.0.0, v1.0, v1)
   push:
     tags:
