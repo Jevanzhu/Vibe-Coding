@@ -6,7 +6,7 @@
 
 | 组件 | 用途 |
 |------|------|
-| **Debian 12** | 基础系统 |
+| **Debian 13** | 基础系统 |
 | **SSH Server** | 远程命令行访问 |
 | **Python 3.11** | 编程语言 |
 | **Node.js 20** | JavaScript/TypeScript 运行时 |

@@ -1,6 +1,6 @@
 # Vibe Coding DevBox - 国外源默认版
-# 基于 Debian 12 (Bookworm) 构建
-FROM debian:bookworm-slim
+# 基于 Debian 13 (Trixie) 构建
+FROM debian:trixie-slim
 
 # 设置环境变量
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -18,7 +18,7 @@ RUN apt-get update && \
         # 基础工具
         ca-certificates curl wget git \
         vim nano htop tree \
-        gnupg lsb-release \
+        gnupg lsb-release sudo \
         # SSH服务
         openssh-server \
         # 网络工具
@@ -75,12 +75,21 @@ RUN ln -sf /home/Dev/.local/bin/claude /usr/local/bin/claude && \
     ln -sf /home/Dev/.opencode/bin/opencode /usr/local/bin/opencode
 
 # Step 8: 切换到国内镜像源（方便在国内使用）
-# 更换 APT 源为腾讯云
-RUN rm -f /etc/apt/sources.list.d/debian.sources && \
-    echo 'deb http://mirrors.cloud.tencent.com/debian/ bookworm main contrib non-free non-free-firmware' > /etc/apt/sources.list && \
-    echo 'deb http://mirrors.cloud.tencent.com/debian/ bookworm-updates main contrib non-free non-free-firmware' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.cloud.tencent.com/debian/ bookworm-backports main contrib non-free non-free-firmware' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.cloud.tencent.com/debian-security/ bookworm-security main contrib non-free non-free-firmware' >> /etc/apt/sources.list
+# 使用 Debian 13 推荐的 deb822 格式配置腾讯云镜像
+RUN rm -f /etc/apt/sources.list && \
+    mkdir -p /etc/apt/sources.list.d && \
+    echo 'Types: deb' > /etc/apt/sources.list.d/tencent.sources && \
+    echo 'URIs: http://mirrors.cloud.tencent.com/debian/' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo 'Suites: trixie trixie-updates trixie-backports' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo 'Components: main contrib non-free non-free-firmware' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo 'Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo '' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo 'Types: deb' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo 'URIs: http://mirrors.cloud.tencent.com/debian-security/' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo 'Suites: trixie-security' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo 'Components: main contrib non-free non-free-firmware' >> /etc/apt/sources.list.d/tencent.sources && \
+    echo 'Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg' >> /etc/apt/sources.list.d/tencent.sources && \
+    rm -f /etc/apt/sources.list.d/debian.sources
 
 # 配置 pip 国内镜像（root 用户）
 RUN mkdir -p /root/.config/pip && \
