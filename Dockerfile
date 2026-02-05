@@ -48,10 +48,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Step 4: 升级 pip 并安装 pm2
-# Debian 13 使用 PIP_BREAK_SYSTEM_PACKAGES 环境变量
-RUN PIP_BREAK_SYSTEM_PACKAGES=1 python3 -m pip install --upgrade pip setuptools wheel && \
-    npm install -g pm2
+# Step 4: 安装 pm2 (Node.js 进程管理)
+RUN npm install -g pm2
 
 # Step 5: 创建 Dev 用户
 # 配置sudo免密，创建工作目录
