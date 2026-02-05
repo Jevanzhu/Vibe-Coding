@@ -49,7 +49,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     rm -rf /var/lib/apt/lists/*
 
 # Step 4: 升级 pip 并安装 pm2
-RUN python3 -m pip install --upgrade pip setuptools wheel --break-system-packages && \
+# Debian 13 使用 PIP_BREAK_SYSTEM_PACKAGES 环境变量
+RUN PIP_BREAK_SYSTEM_PACKAGES=1 python3 -m pip install --upgrade pip setuptools wheel && \
     npm install -g pm2
 
 # Step 5: 创建 Dev 用户
