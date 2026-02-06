@@ -27,7 +27,7 @@ RUN apt-get update && \
         # 编译工具链
         build-essential cmake make gcc g++ \
         automake autoconf libtool pkg-config \
-        # Python环境
+        # Python环境 (Debian 13 自带最新版)
         python3 python3-pip python3-venv python3-dev \
         libffi-dev libssl-dev zlib1g-dev libbz2-dev \
         libreadline-dev libsqlite3-dev libncurses-dev \
@@ -43,8 +43,8 @@ RUN mkdir -p /var/run/sshd && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
-# Step 3: 安装 Node.js (v20 LTS)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+# Step 3: 安装最新版 Node.js (v24 LTS)
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

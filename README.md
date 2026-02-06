@@ -8,8 +8,8 @@
 |------|------|
 | **Debian 13** | 基础系统 |
 | **SSH Server** | 远程命令行访问 |
-| **Python 3.11** | 编程语言 |
-| **Node.js 20** | JavaScript/TypeScript 运行时 |
+| **Python 3.x** | 编程语言（Debian 13 最新版） |
+| **Node.js 24** | JavaScript/TypeScript 运行时（LTS） |
 | **Claude Code** | Anthropic AI 编程助手 |
 | **OpenCode** | 开源多模型 AI 助手 |
 | **PM2** | Node.js 进程管理 |
