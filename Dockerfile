@@ -19,6 +19,7 @@ RUN apt-get update && \
         ca-certificates curl wget git \
         vim nano htop tree \
         gnupg lsb-release sudo \
+        bash-completion \
         # SSH服务
         openssh-server \
         # 网络工具
