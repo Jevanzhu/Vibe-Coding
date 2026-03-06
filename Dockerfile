@@ -1,4 +1,4 @@
-# Vibe Coding DevBox - 国外源默认版
+# Vibe Coding DevBox - 国内源默认版
 # 基于 Debian 13 (Trixie) 构建
 FROM debian:trixie-slim
 
@@ -49,8 +49,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Step 4: 安装 pm2 (Node.js 进程管理)
-RUN npm install -g pm2
+# Step 4: 安装 Node.js 全局工具
+RUN npm install -g pm2 @openai/codex @google/gemini-cli
 
 # Step 5: 创建 Dev 用户
 # 配置sudo免密，创建工作目录
