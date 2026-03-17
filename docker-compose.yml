@@ -19,8 +19,8 @@ services:
     volumes:
       # 项目代码目录
       - ./projects:/workspace/projects
-      # Dev用户home目录持久化
-      - home-data:/home/Dev
+      # Coder用户home目录持久化
+      - home-data:/home/Coder
       # Docker socket（容器内使用宿主机Docker）
       - /var/run/docker.sock:/var/run/docker.sock
       # 时区同步

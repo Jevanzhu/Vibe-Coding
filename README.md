@@ -46,7 +46,7 @@ docker compose up -d --build
 ## 访问方式
 
 ```bash
-ssh -p 2222 Dev@<服务器IP>
+ssh -p 2222 Coder@<服务器IP>
 密码: vibecoding
 ```
 
@@ -66,13 +66,13 @@ ssh -p 2222 Dev@<服务器IP>
 ```bash
 # 在本地 VS Code 安装 "Remote - SSH" 插件
 # 然后连接:
-ssh -p 2222 Dev@你的服务器IP
+ssh -p 2222 Coder@你的服务器IP
 ```
 
 ### SSH 命令行
 
 ```bash
-ssh -p 2222 Dev@你的服务器IP
+ssh -p 2222 Coder@你的服务器IP
 # 然后在容器中:
 claude    # 启动 Claude Code
 opencode  # 启动 OpenCode
@@ -86,7 +86,7 @@ gemini    # 启动 Gemini CLI
 
 ```bash
 # 连接容器
-ssh -p 2222 Dev@你的服务器IP
+ssh -p 2222 Coder@你的服务器IP
 
 # Claude Code
 export ANTHROPIC_API_KEY=sk-xxx
@@ -148,7 +148,7 @@ docker compose restart
 1. **修改默认密码**（必须）
    ```bash
    docker compose exec devbox bash
-   passwd Dev
+   passwd Coder
    ```
 
 2. 生产环境使用密钥认证替代密码

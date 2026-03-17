@@ -49,30 +49,40 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Step 4: 安装 Node.js 全局工具
-RUN npm install -g pm2 @openai/codex @google/gemini-cli
-
-# Step 5: 创建 Dev 用户
+# Step 4: 创建 Coder 用户
 # 配置sudo免密，创建工作目录
-RUN useradd -m -s /bin/bash Dev && \
-    usermod -aG sudo Dev && \
-    echo 'Dev:vibecoding' | chpasswd && \
-    echo 'Dev ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+RUN useradd -m -s /bin/bash Coder && \
+    usermod -aG sudo Coder && \
+    echo 'Coder:vibecoding' | chpasswd && \
+    echo 'Coder ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     mkdir -p /workspace && \
-    chown -R Dev:Dev /workspace
+    chown -R Coder:Coder /workspace
 
-# Step 6: 安装 AI 编程助手 (Claude Code + OpenCode)
-USER Dev
+# Step 5: 安装所有用户级工具 (Claude Code + OpenCode + npm 工具)
+USER Coder
+WORKDIR /home/Coder
+
+# 配置 npm 用户级安装目录
+RUN mkdir -p ~/.local/bin ~/.local/lib/node_modules && \
+    npm config set prefix ~/.local
+
+# 安装 AI 编程助手
 RUN curl -fsSL https://claude.ai/install.sh | bash && \
     curl -fsSL https://opencode.ai/install | bash && \
     mkdir -p ~/.config/claude ~/.config/opencode
 
-# Step 7: 最终配置
+# 安装 Node.js 全局工具 (用户级)
+RUN npm install -g pm2 @openai/codex @google/gemini-cli
+
+# Step 6: 最终配置
 # 创建全局命令软链接
 WORKDIR /workspace
 USER root
-RUN ln -sf /home/Dev/.local/bin/claude /usr/local/bin/claude && \
-    ln -sf /home/Dev/.opencode/bin/opencode /usr/local/bin/opencode
+RUN ln -sf /home/Coder/.local/bin/claude /usr/local/bin/claude && \
+    ln -sf /home/Coder/.opencode/bin/opencode /usr/local/bin/opencode && \
+    ln -sf /home/Coder/.local/bin/pm2 /usr/local/bin/pm2 && \
+    ln -sf /home/Coder/.local/bin/codex /usr/local/bin/codex && \
+    ln -sf /home/Coder/.local/bin/gemini /usr/local/bin/gemini
 
 # Step 8: 切换到国内镜像源（方便在国内使用）
 # 使用 Debian 13 推荐的 deb822 格式配置腾讯云镜像
@@ -97,12 +107,12 @@ RUN mkdir -p /root/.config/pip && \
     echo 'index-url = http://mirrors.cloud.tencent.com/pypi/simple/' >> /root/.config/pip/pip.conf && \
     echo 'trusted-host = mirrors.cloud.tencent.com' >> /root/.config/pip/pip.conf
 
-# 配置 pip 国内镜像（Dev 用户）
-RUN mkdir -p /home/Dev/.config/pip && \
-    echo '[global]' > /home/Dev/.config/pip/pip.conf && \
-    echo 'index-url = http://mirrors.cloud.tencent.com/pypi/simple/' >> /home/Dev/.config/pip/pip.conf && \
-    echo 'trusted-host = mirrors.cloud.tencent.com' >> /home/Dev/.config/pip/pip.conf && \
-    chown -R Dev:Dev /home/Dev/.config/pip
+# 配置 pip 国内镜像（Coder 用户）
+RUN mkdir -p /home/Coder/.config/pip && \
+    echo '[global]' > /home/Coder/.config/pip/pip.conf && \
+    echo 'index-url = http://mirrors.cloud.tencent.com/pypi/simple/' >> /home/Coder/.config/pip/pip.conf && \
+    echo 'trusted-host = mirrors.cloud.tencent.com' >> /home/Coder/.config/pip/pip.conf && \
+    chown -R Coder:Coder /home/Coder/.config/pip
 
 # 暴露端口
 EXPOSE 22 3000 5000 8000 8080

@@ -37,9 +37,11 @@ yarn-error.log*
 # IDE
 .vscode/
 .idea/
+.codebuddy/
 *.swp
 *.swo
 *~
+
 
 # 操作系统
 .DS_Store
