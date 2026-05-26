@@ -5,7 +5,7 @@ FROM debian:trixie-slim
 # 设置环境变量
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
-    NODE_VERSION=20.x \
+    NODE_VERSION=24.x \
     SHELL=/bin/bash
 
 # 设置工作目录
@@ -72,19 +72,16 @@ RUN curl -fsSL https://claude.ai/install.sh | bash && \
     mkdir -p ~/.config/claude ~/.config/opencode
 
 # 安装 Node.js 全局工具 (用户级)
-RUN npm install -g pm2 @openai/codex @google/gemini-cli
+RUN npm install -g pm2 @openai/codex
 
-# Step 6: 最终配置
-# 创建全局命令软链接
+# Step 6: 配置工具全局可用
+# 开放目录权限 + 全局 PATH，让所有用户都能使用 Coder 安装的工具
 WORKDIR /workspace
 USER root
-RUN ln -sf /home/Coder/.local/bin/claude /usr/local/bin/claude && \
-    ln -sf /home/Coder/.opencode/bin/opencode /usr/local/bin/opencode && \
-    ln -sf /home/Coder/.local/bin/pm2 /usr/local/bin/pm2 && \
-    ln -sf /home/Coder/.local/bin/codex /usr/local/bin/codex && \
-    ln -sf /home/Coder/.local/bin/gemini /usr/local/bin/gemini
+RUN chmod -R o+rx /home/Coder/.local /home/Coder/.opencode/bin && \
+    echo 'export PATH="/home/Coder/.local/bin:/home/Coder/.opencode/bin:$PATH"' >> /etc/bash.bashrc
 
-# Step 8: 切换到国内镜像源（方便在国内使用）
+# Step 7: 切换到国内镜像源（方便在国内使用）
 # 使用 Debian 13 推荐的 deb822 格式配置腾讯云镜像
 RUN rm -f /etc/apt/sources.list && \
     mkdir -p /etc/apt/sources.list.d && \

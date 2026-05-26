@@ -13,7 +13,6 @@
 | **Claude Code** | Anthropic AI 编程助手 |
 | **OpenCode** | 开源多模型 AI 助手 |
 | **Codex CLI** | OpenAI AI 编程助手 |
-| **Gemini CLI** | Google Gemini AI 助手 |
 | **PM2** | Node.js 进程管理 |
 
 ## 快速部署
@@ -57,7 +56,6 @@ ssh -p 2222 Coder@<服务器IP>
 | **Claude Code** | `curl -fsSL https://claude.ai/install.sh \| bash` |
 | **OpenCode** | `curl -fsSL https://opencode.ai/install \| bash` |
 | **Codex CLI** | `npm install -g @openai/codex` |
-| **Gemini CLI** | `npm install -g @google/gemini-cli` |
 
 ## 远程开发工作流
 
@@ -77,7 +75,6 @@ ssh -p 2222 Coder@你的服务器IP
 claude    # 启动 Claude Code
 opencode  # 启动 OpenCode
 codex     # 启动 Codex CLI
-gemini    # 启动 Gemini CLI
 ```
 
 ## 配置 API Keys
@@ -94,13 +91,9 @@ export ANTHROPIC_API_KEY=sk-xxx
 # Codex CLI
 export OPENAI_API_KEY=sk-xxx
 
-# Gemini CLI
-export GEMINI_API_KEY=xxx
-
 # 或持久化到 ~/.bashrc
 echo 'export ANTHROPIC_API_KEY=sk-xxx' >> ~/.bashrc
 echo 'export OPENAI_API_KEY=sk-xxx' >> ~/.bashrc
-echo 'export GEMINI_API_KEY=xxx' >> ~/.bashrc
 source ~/.bashrc
 ```
 
